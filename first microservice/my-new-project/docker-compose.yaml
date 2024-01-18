@@ -1,0 +1,21 @@
+version: '3'
+services:
+#Podemos definir los servicios(En este caso cada microservicio con su nombre)
+  video-streaming:
+  #Escogemos la imagen(Esta ya la tenemos que es lo del Dockerfile)
+    image: video-streaming
+    build:
+    #Pasamos el contexto(Que es lo que pasamos por consola al hacer docker build)
+      context: ./video-streaming
+      dockerfile: Dockerfile
+      #Especificamos el nombre del contenedor
+    container_name: video-streaming
+    ports:
+    #Mapeamos los puertos(Por el que se accesa:El puerto dentro del contenedor)
+      - "4000:80"
+    environment:
+    #Variables de entorno, esta nos ayuda para pasar como parámetro al programa
+      - PORT=80
+      #Lo ponemos en no ya que en desarrollo queremos ver los logs cuando hay error, en prod
+      #Ya tendremos los kubernetes que haran reset conforme ocupe
+    restart: "no"
