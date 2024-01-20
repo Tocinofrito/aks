@@ -1,5 +1,27 @@
 version: '3'
 services:
+  db:
+    image: mongo:4.2.8
+    container_name: db
+
+    ports:
+      - "4000:27017"
+    restart: always
+
+  azure-storage:
+    image: azure-storage
+    build:
+      context: ./azure-storage
+      dockerfile: Dockerfile
+    container_name: video-storage
+    ports:
+      - "4001:80"
+    environment:
+      - PORT=80
+      - STORAGE_ACCOUNT_NAME=microservicios
+      - STORAGE_ACCESS_KEY=JfjcZZXjPCqoF97fkPPmW1f8CcNnKH4hasK2FdCQk+1Jq4qNJubKWTVqqveCw/qrwN3CyFQ6MnTd+AStGBHqGg==
+
+    restart: "no"
 #Podemos definir los servicios(En este caso cada microservicio con su nombre)
   video-streaming:
   #Escogemos la imagen(Esta ya la tenemos que es lo del Dockerfile)
@@ -12,10 +34,16 @@ services:
     container_name: video-streaming
     ports:
     #Mapeamos los puertos(Por el que se accesa:El puerto dentro del contenedor)
-      - "4000:80"
+      - "4002:80"
     environment:
     #Variables de entorno, esta nos ayuda para pasar como parámetro al programa
       - PORT=80
+      #Configuramos el microservicio para conectar a la db
+      - DBHOST=mongodb://db:27017
+      - DBNAME=video-streaming
+      - VIDEO_STORAGE_HOST=video-storage
+      - VIDEO_STORAGE_PORT=80
       #Lo ponemos en no ya que en desarrollo queremos ver los logs cuando hay error, en prod
       #Ya tendremos los kubernetes que haran reset conforme ocupe
     restart: "no"
+  
