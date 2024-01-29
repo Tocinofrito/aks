@@ -22,6 +22,16 @@ services:
       - STORAGE_ACCESS_KEY=JfjcZZXjPCqoF97fkPPmW1f8CcNnKH4hasK2FdCQk+1Jq4qNJubKWTVqqveCw/qrwN3CyFQ6MnTd+AStGBHqGg==
 
     restart: "no"
+  rabbit:
+    image: rabbitmq:3.8.1-management
+    container_name: rabbit
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    expose:
+      - "5672"
+      - "15672"
+    restart: always  
 #Podemos definir los servicios(En este caso cada microservicio con su nombre)
   video-streaming:
   #Escogemos la imagen(Esta ya la tenemos que es lo del Dockerfile)
@@ -46,4 +56,18 @@ services:
       #Lo ponemos en no ya que en desarrollo queremos ver los logs cuando hay error, en prod
       #Ya tendremos los kubernetes que haran reset conforme ocupe
     restart: "no"
-  
+  history:
+    image: history
+    build: 
+      context: ./history
+      dockerfile: Dockerfile-dev
+    container_name: history
+    volumes:
+      - /tmp/history/npm-cache:/root/.npm:z
+      - ./history/src:/usr/src/app/src:z
+    ports:
+      - "4003:80"
+    environment:
+      - PORT=80
+      - NODE_ENV=development
+    restart: "no"

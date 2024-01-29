@@ -1,0 +1,9 @@
+#Dockerfile de producción
+
+FROM node:12.18.1-alpine
+WORKDIR /usr/src/app
+COPY package*.json ./
+
+RUN npm install --only=production #Instalamos solo lib de prod
+COPY ./src ./src
+CMP npm start

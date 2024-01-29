@@ -1,0 +1,15 @@
+FROM node:10.15.2-alpine
+
+WORKDIR /usr/src/app
+
+COPY package*.json ./
+
+# Limpiar cualquier configuración existente relacionada con cache-min
+RUN npm config delete cache-min && \
+    npm config delete prefer-online && \
+    npm config set prefer-offline true --global && \
+    npm config set cache-min 9999999 --global
+
+RUN npm install
+
+CMD npm run start:dev
